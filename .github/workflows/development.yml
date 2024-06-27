@@ -1,9 +1,12 @@
 name: Download from S3 and Create PR
 
 on:
-  schedule:
-    - cron: '*/1 * * * *'
-
+  # schedule:
+  #   - cron: '*/1 * * * *'
+    push:
+      branches:
+        - update-state-machine
+  
 jobs:
   download_s3_and_create_pr:
     runs-on: ubuntu-latest
