@@ -10,14 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Fetch all branches
         run: git fetch --all
 
+      - name: Ensure update-state-machine is up-to-date
+        run: |
+          git checkout update-state-machine
+          git pull origin update-state-machine
+
       - name: Check for differences
-        run: git diff origin/main..origin/update-state-machine
+        id: diff-check
+        run: |
+          git diff origin/main..origin/update-state-machine
+          DIFF=$(git diff origin/main..origin/update-state-machine)
+          echo "::set-output name=diff::${DIFF}"
 
       - name: Create Pull Request
+        if: steps.diff-check.outputs.diff != ''
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
