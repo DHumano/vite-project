@@ -27,7 +27,18 @@ jobs:
       - name: Download from S3
         run: |
           mkdir -p downloaded-files
-          aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifest.json ./downloaded-files --recursive
+          aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifest.json ./ --recursive
+
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Ensure update-state-machine is up-to-date
+        run: |
+          git checkout update-state-machine
+          git pull origin update-state-machine
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
