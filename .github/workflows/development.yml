@@ -23,7 +23,7 @@ jobs:
       - name: Download from S3
         run: |
           mkdir -p src/stateMachine
-          aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifest.json ./src/stateMachine/test.json
+          aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifestA.json ./src/stateMachine/test.json
             
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
