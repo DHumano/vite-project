@@ -11,8 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Fetch all branches
+        run: git fetch --all
+
       - name: Check for differences
-        run: git diff main..update-state-machine
+        run: git diff origin/main..origin/update-state-machine
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
