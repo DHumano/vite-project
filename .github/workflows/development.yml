@@ -1,12 +1,13 @@
 name: Download from S3 and Create PR
 
 on:
-  # schedule:
-  #   - cron: '*/1 * * * *'
-    push:
-      branches:
-        - update-state-machine
-  
+  schedule:
+    - cron: '*/20 * * * *'
+    # push:
+    #   branches:
+    #     - update-state-machine
+  workflow_dispatch:
+
 jobs:
   download_s3_and_create_pr:
     runs-on: ubuntu-latest
@@ -22,36 +23,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Install AWS CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
-
       - name: Download from S3
         run: |
           mkdir -p downloaded-files
           aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifest.json ./ --recursive
 
-      - name: Checkout the repository
-        uses: actions/checkout@v3
-
-      - name: Fetch all branches
-        run: git fetch --all
-
-      - name: Ensure update-state-machine is up-to-date
-        run: |
-          git checkout update-state-machine
-          git pull origin update-state-machine
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Commit from update-s3-files'
+          commit-message: 'Commit from update-s3-file'
           title: 'Automated Pull Request to update files from S3'
           body: |
-            This is an automated pull request to update the main branch with changes from the `update-s3-files` branch.
+            This is an automated pull request to update the main branch with changes from the `update-s3-file` branch.
           base: main
-          branch: update-s3-files
+          branch: update-s3-file
           delete-branch: true
           draft: false
