@@ -29,12 +29,6 @@ jobs:
           mkdir -p downloaded-files
           aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifest.json ./downloaded-files --recursive
 
-      - name: Push changes
-        uses: ad-m/github-push-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-s3-files
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
