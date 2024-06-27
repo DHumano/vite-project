@@ -2,7 +2,7 @@ name: Download from S3 and Create PR
 
 on:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -23,10 +23,9 @@ jobs:
       - name: Download from S3
         run: |
           mkdir -p src/stateMachine
-          aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifestA.json ./src/stateMachine/test.json
-          if [ $? -ne 0 ]; then
-            echo "File does not exist in S3, stopping the workflow."
-            exit 1
+          if ! aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifestA.json ./src/stateMachine/test.json; then
+            echo "File does not exist in S3, exiting workflow successfully."
+            exit 0
           fi
 
       - name: Create Pull Request
