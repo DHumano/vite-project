@@ -11,15 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Check for differences
+        run: git diff main..update-state-machine
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Commit from update-state-machine"
-          title: "Automated Pull Request from update-state-machine"
+          commit-message: 'Commit from update-state-machine'
+          title: 'Automated Pull Request from update-state-machine'
           body: |
-            This is an automated pull request to update the main dario branch with changes from `update-state-machine`.
-          base: "main"
-          branch: "update-state-machine"
+            This is an automated pull request to update the main branch with changes from `update-state-machine`.
+          base: 'main'
+          branch: 'update-state-machine'
           delete-branch: false
           draft: false
