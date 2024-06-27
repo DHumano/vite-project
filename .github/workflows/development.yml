@@ -29,17 +29,6 @@ jobs:
           mkdir -p downloaded-files
           aws s3 cp s3://legal-ai-compliance-data-production/2024-06-27_02:10:46/user-manifest.json ./downloaded-files --recursive
 
-      - name: Configure Git
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-
-      - name: Commit files
-        run: |
-          git checkout -b update-s3-files
-          git add downloaded-files
-          git commit -m "Download files from S3"
-
       - name: Push changes
         uses: ad-m/github-push-action@v1
         with:
