@@ -1,35 +1,60 @@
-name: Auto Create PR on Push
+name: Download from S3 and Create PR
 
 on:
-  push:
-    branches:
-      - update-state-machine
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  create_pull_request:
+  download_s3_and_create_pr:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Fetch all branches
-        run: git fetch --all
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      - name: Ensure update-state-machine is up-to-date
+      - name: Install AWS CLI
         run: |
-          git checkout update-state-machine
-          git pull origin update-state-machine
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Download from S3
+        run: |
+          mkdir -p downloaded-files
+          aws s3 cp s3://your-bucket-name/path/to/your/file ./downloaded-files --recursive
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Commit files
+        run: |
+          git checkout -b update-s3-files
+          git add downloaded-files
+          git commit -m "Download files from S3"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-s3-files
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Commit from update-state-machine"
-          title: "Automated Pull Request from update-state-machine"
+          commit-message: 'Commit from update-s3-files'
+          title: 'Automated Pull Request to update files from S3'
           body: |
-            This is an automated pull request to update the main branch with changes from `update-state-machine`.
+            This is an automated pull request to update the main branch with changes from the `update-s3-files` branch.
           base: main
-          branch: update-state-machine
-          delete-branch: false
+          branch: update-s3-files
+          delete-branch: true
           draft: false
-          branch-suffix: timestamp  # Ensures a unique branch name for the PR
